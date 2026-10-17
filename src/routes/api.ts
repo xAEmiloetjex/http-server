@@ -41,6 +41,7 @@ export default class API {
     private initializeRoutes(): void {
         this.router.use('/test', API_Test)
         // this.router.use('/recursion', Recursion)
+        this.router.all('/test69', this.test69);
         this.router.get('/example', this.exampleRoute);
     }
     private async RateLimiter(req: IReq, res: IRes, next: Function): Promise<void> {
@@ -56,6 +57,7 @@ export default class API {
 
             const clientIP = req.socket.remoteAddress;
             if (!APIRateLimiter.isAllowed(clientIP)) {
+                await res.setHeader('Content-Type', 'application/json');
                 await res.setStatus(responseCode)
                 await res.end(JSON.stringify({
                     code: status2CodeNStr(responseCode),
@@ -94,6 +96,16 @@ export default class API {
                 message: err ? err.message : 'Internal Server Error'
             }
         }))
+    }
+
+    private UwU = {
+        uwu: 0
+    }
+
+    private test69 = async (req: IReq, res: IRes) => {
+        await res.setHeader('content-type', 'application/json')
+        // res.json({ message: 'API is working!' });
+        await res.end(JSON.stringify(this.UwU));
     }
 
     // Example route handler

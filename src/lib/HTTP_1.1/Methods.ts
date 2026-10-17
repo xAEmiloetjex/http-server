@@ -3,23 +3,45 @@ import { QuickDB, MemoryDriver, JSONDriver } from "quick.db"
 import { MethodObj, Methods, ParseMethod } from "../shared/Methods"
 import { EHTTPStatus } from "./Server"
 import { IRespObj } from "./V4"
+import { DUMP_CONF, dumpStore } from "../memlog"
 
-const Store = new QuickDB({
-  driver: new MemoryDriver()
-})
+import { _map as fMap } from "../std/ddrm/core/utils/maps"
 
+export const allRoutesRegister = fMap();
 export const Routes = new Map<string, null>()
 
-let _get      = Store.table('_get')
-let _head     = Store.table('_head')
-let _post     = Store.table('_post')
-let _put      = Store.table('_put')
-let _delete   = Store.table('_delete')
-let _connect  = Store.table('_connect')
-let _options  = Store.table('_options')
-let _trace    = Store.table('_trace')
-let _patch    = Store.table('_patch')
-let _all      = Store.table('_all')
+// let _get      = Store.table('_get')
+// let _head     = Store.table('_head')
+// let _post     = Store.table('_post')
+// let _put      = Store.table('_put')
+// let _delete   = Store.table('_delete')
+// let _connect  = Store.table('_connect')
+// let _options  = Store.table('_options')
+// let _trace    = Store.table('_trace')
+// let _patch    = Store.table('_patch')
+// let _all      = Store.table('_all')
+
+let _get      = new Map()
+let _head     = new Map()
+let _post     = new Map()
+let _put      = new Map()
+let _delete   = new Map()
+let _connect  = new Map()
+let _options  = new Map()
+let _trace    = new Map()
+let _patch    = new Map()
+let _all      = new Map()
+
+// let _get      = fMap()
+// let _head     = fMap()
+// let _post     = fMap()
+// let _put      = fMap()
+// let _delete   = fMap()
+// let _connect  = fMap()
+// let _options  = fMap()
+// let _trace    = fMap()
+// let _patch    = fMap()
+// let _all      = fMap()
 
 let routeCounter: number = 0
 
@@ -38,6 +60,15 @@ export function registerRoute(method: string | Methods, endpoint, handler: IResp
     ID
   })
 
+  if (DUMP_CONF.getIdx(0) === true) {
+    allRoutesRegister.set(endpoint, {
+      expectedStatus: handler.status,
+      handler: handler.handler.toString(),
+      method: _meth.str,
+      ID
+    })
+  }
+
   routeCounter++
 }
 
@@ -47,7 +78,7 @@ export async function getRoute(method: string | Methods, endpoint): Promise<Rout
   return r
 }
 
-function translate(obj: MethodObj): QuickDB<any> {
+function translate(obj: MethodObj): Map<any, any> {
   switch(obj.str) {
     case 'GET':
       return _get

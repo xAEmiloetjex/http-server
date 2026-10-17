@@ -1,0 +1,187 @@
+{
+  "DUMP_CONF": {
+    "a": true,
+    "b": "API_TRIGGER",
+    "c": "./dump.json",
+    "d": "2",
+    "e": false
+  },
+  "dump_store": [
+    {
+      "key": "allRoutesRegister",
+      "value": [
+        {
+          "key": "/tests/test/test2/",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async index(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        await res.end(JSON.stringify({ message: 'api.test.test2.index!' }));\n    }",
+            "method": "GET",
+            "ID": 0
+          }
+        },
+        {
+          "key": "/tests/test/test2/example",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async exampleRoute(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        // res.json({ message: 'API is working!' });\n        await res.end(JSON.stringify({ message: 'API is working!dfhdfhfdh' }));\n    }",
+            "method": "GET",
+            "ID": 1
+          }
+        },
+        {
+          "key": "/tests/test/example",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async exampleRoute(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        // res.json({ message: 'API is working!' });\n        await res.end(JSON.stringify({ message: 'API is working!' }));\n    }",
+            "method": "GET",
+            "ID": 2
+          }
+        },
+        {
+          "key": "/tests/vectest",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async VecTest(req, res) {\n        // console.log(this.VecTestMap)\n        const TestMap = {\n            0: 'enabled',\n            1: 'mode',\n            2: 'location',\n            3: 'padding',\n            4: 'heap_enabled'\n        };\n        const v = memlog_1.DUMP_CONF.clone()\n            .allowUnsafe()\n            .mut()\n            .setSpace(vector_1.Spaces.CUSTOM)\n            .setCustomMap(TestMap);\n        await res.setHeader('Content-Type', 'application/json');\n        await res.setHeader('serverside-force-content-length', 'true');\n        await res.end(String(JSON.stringify(v.idxMap())));\n    }",
+            "method": "GET",
+            "ID": 3
+          }
+        },
+        {
+          "key": "/api/test/test2/",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async index(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        await res.end(JSON.stringify({ message: 'api.test.test2.index!' }));\n    }",
+            "method": "GET",
+            "ID": 4
+          }
+        },
+        {
+          "key": "/api/test/test2/example",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async exampleRoute(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        // res.json({ message: 'API is working!' });\n        await res.end(JSON.stringify({ message: 'API is working!dfhdfhfdh' }));\n    }",
+            "method": "GET",
+            "ID": 5
+          }
+        },
+        {
+          "key": "/api/test/example",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async exampleRoute(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        // res.json({ message: 'API is working!' });\n        await res.end(JSON.stringify({ message: 'API is working!' }));\n    }",
+            "method": "GET",
+            "ID": 6
+          }
+        },
+        {
+          "key": "/api/example",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async exampleRoute(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        // res.json({ message: 'API is working!' });\n        await res.end(JSON.stringify({ message: 'API is working!' }));\n    }",
+            "method": "GET",
+            "ID": 7
+          }
+        },
+        {
+          "key": "/sockets/new",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async S_New(req, res) {\n        const obj = JSON.parse(req.body);\n        const data = await this.EV.emit(obj.eventId, ...obj.arguments);\n        await res.setHeader('Content-Type', 'application/json');\n        await res.setHeader('serverside-force-content-length', 'true');\n        await res.end(String(JSON.stringify({\n            ...(data)\n        })));\n    }",
+            "method": "POST",
+            "ID": 8
+          }
+        },
+        {
+          "key": "/api2/test/test2/",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async index(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        await res.end(JSON.stringify({ message: 'api.test.test2.index!' }));\n    }",
+            "method": "GET",
+            "ID": 9
+          }
+        },
+        {
+          "key": "/api2/test/test2/example",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async exampleRoute(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        // res.json({ message: 'API is working!' });\n        await res.end(JSON.stringify({ message: 'API is working!dfhdfhfdh' }));\n    }",
+            "method": "GET",
+            "ID": 10
+          }
+        },
+        {
+          "key": "/api2/test/example",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async exampleRoute(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        // res.json({ message: 'API is working!' });\n        await res.end(JSON.stringify({ message: 'API is working!' }));\n    }",
+            "method": "GET",
+            "ID": 11
+          }
+        },
+        {
+          "key": "/api2/example",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async exampleRoute(req, res) {\n        await res.setHeader('content-type', 'application/json');\n        // res.json({ message: 'API is working!' });\n        await res.end(JSON.stringify({ message: 'API is working!' }));\n    }",
+            "method": "GET",
+            "ID": 12
+          }
+        },
+        {
+          "key": "/core/",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async (req, res) => {\n    await res.setHeader('Content-Type', 'text/plain');\n    await res.setHeader('serverside-force-content-length', 'true');\n    await res.end('core');\n}",
+            "method": "ALL",
+            "ID": 13
+          }
+        },
+        {
+          "key": "/legacy/",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async (req, res) => {\n    const doFunnyNumber = true;\n    await res.setHeader('serverside-force-content-length', 'true');\n    // console.log('[main.all(\"/\")]', req.socket.address());\n    const sockAddr = req.socket.address();\n    // @ts-expect-error\n    if (!sockAddr.family || !sockAddr.address || !sockAddr.port) {\n        await res.setHeader('Content-Type', 'application/json');\n        await res.setStatus(HTTP_Server_1.EHTTPStatus.INTERNAL_SERVER_ERROR);\n        await res.end(JSON.stringify({\n            code: (0, HTTP_Server_1.status2CodeNStr)(HTTP_Server_1.EHTTPStatus.INTERNAL_SERVER_ERROR),\n            error: 'Something went wrong :!'\n        }));\n        return;\n    }\n    // @ts-expect-error\n    const addr_comb = `${sockAddr.family}://${sockAddr.address}:${sockAddr.port}`;\n    if (!addrCount.has(addr_comb))\n        addrCount.set(addr_comb, 0);\n    if (addrCount.get(addr_comb) > 10) {\n        let responseCode = HTTP_Server_1.EHTTPStatus.TOO_MANY_REQUESTS;\n        if (doFunnyNumber === true)\n            responseCode = HTTP_Server_1.EHTTPStatus.KEEP_YOUR_CALM;\n        else\n            responseCode = HTTP_Server_1.EHTTPStatus.TOO_MANY_REQUESTS;\n        await res.setHeader('Content-Type', 'application/json');\n        await res.setStatus(responseCode);\n        return await res.end(JSON.stringify({\n            code: (0, HTTP_Server_1.status2CodeNStr)(responseCode),\n            error: 'You\\'re timed-out because you are sending too many requests :!'\n        }));\n    }\n    else {\n        await res.setHeader('Content-Type', 'text/plain');\n        await res.setStatus(HTTP_Server_1.EHTTPStatus.OK);\n        await res.end(`Joe mama - oe na na`);\n        addrCount.set(addr_comb, addrCount.get(addr_comb) + 1);\n    }\n}",
+            "method": "ALL",
+            "ID": 14
+          }
+        },
+        {
+          "key": "/",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async function StaticHandler(req, res) {\n    const clientIP = req.socket.remoteAddress;\n    if (!staticRateLimit.isAllowed(clientIP)) {\n        await res.setHeader('Content-Type', 'application/json');\n        await res.setStatus(HTTP_Server_1.EHTTPStatus.TOO_MANY_REQUESTS);\n        await res.end(JSON.stringify({\n            code: (0, HTTP_Server_1.status2CodeNStr)(HTTP_Server_1.EHTTPStatus.TOO_MANY_REQUESTS),\n            error: 'You\\'re timed-out because you are sending too many requests :!'\n        }));\n        return 1;\n    }\n    const page = query(req.queries, \"page\");\n    const _page = page == \"undefined\" || page == \"\" ? \"/\" : page;\n    const mime_t_ = mime.lookup(_page);\n    const mime_t = mime_t_ == false\n        ? \"text/plain\"\n        : mime_t_ == \"text/x-handlebars-template\"\n            ? \"text/html\"\n            : mime_t_;\n    let location = view_locations.static + \"/\" + _page;\n    // if (location.endsWith('//')) location.replace('//', '/') \n    try {\n        await res.setHeader(\"Content-Type\", mime_t);\n        await res.setHeader(\"serverside-force-content-length\", \"true\");\n        let page__ = \"\";\n        if (fs.lstatSync(location).isDirectory())\n            page__ = Folder();\n        // if (String(_page).endsWith(\"/\")) page__ = Folder();\n        else\n            page__ = mime_t.startsWith('text') ? fs.readFileSync(location).toString() : fs.readFileSync(location);\n        function Folder() {\n            let folder = fs.readdirSync(location);\n            res.setHeader(\"Content-Type\", \"text/html\");\n            if (folder.includes(\"index.html\"))\n                return fs.readFileSync(location + \"index.html\").toString();\n            else if (folder.includes(\"index.hbs\"))\n                return HBSComp(fs.readFileSync(location + \"index.hbs\").toString())({});\n            else {\n                let string = ``;\n                for (const file of folder) {\n                    try {\n                        const folder2 = fs.readdirSync(node_path_1.default.join(location, file));\n                        void folder2;\n                        string += `<a data-link-static href=\"/?page=${_page}/${file}/\"><div>/${file}/</div></a><hr/>`;\n                    }\n                    catch (e) {\n                        string += `<a data-link-static href=\"/?page=${_page}/${file}\"><div>/${file}</div></a><hr/>`;\n                        void e;\n                    }\n                }\n                return `<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Document</title>\n    <link rel=\"stylesheet\" href=\"/?page=/assets/css/base.css\">\n\n    <script src=\"/?page=/assets/setup.js\" type=\"module\" defer></script>\n</head>\n<body>\n    ${string}\n</body>\n</html>`;\n            }\n        }\n        if (String(_page).endsWith(\".hbs\"))\n            await res.end(HBSComp(page__)({}));\n        else\n            await res.end(page__);\n    }\n    catch (e) {\n        await res.setHeader(\"Content-Type\", \"text/plain\");\n        await res.setHeader(\"serverside-force-content-length\", \"true\");\n        await res.setStatus(404);\n        await res.end(`CANNOT GET '${req.url}', RETURNED 404\\n------------------\\n${e}`);\n    }\n}",
+            "method": "GET",
+            "ID": 15
+          }
+        },
+        {
+          "key": "/static",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async function StaticHandler(req, res) {\n    const clientIP = req.socket.remoteAddress;\n    if (!staticRateLimit.isAllowed(clientIP)) {\n        await res.setHeader('Content-Type', 'application/json');\n        await res.setStatus(HTTP_Server_1.EHTTPStatus.TOO_MANY_REQUESTS);\n        await res.end(JSON.stringify({\n            code: (0, HTTP_Server_1.status2CodeNStr)(HTTP_Server_1.EHTTPStatus.TOO_MANY_REQUESTS),\n            error: 'You\\'re timed-out because you are sending too many requests :!'\n        }));\n        return 1;\n    }\n    const page = query(req.queries, \"page\");\n    const _page = page == \"undefined\" || page == \"\" ? \"/\" : page;\n    const mime_t_ = mime.lookup(_page);\n    const mime_t = mime_t_ == false\n        ? \"text/plain\"\n        : mime_t_ == \"text/x-handlebars-template\"\n            ? \"text/html\"\n            : mime_t_;\n    let location = view_locations.static + \"/\" + _page;\n    // if (location.endsWith('//')) location.replace('//', '/') \n    try {\n        await res.setHeader(\"Content-Type\", mime_t);\n        await res.setHeader(\"serverside-force-content-length\", \"true\");\n        let page__ = \"\";\n        if (fs.lstatSync(location).isDirectory())\n            page__ = Folder();\n        // if (String(_page).endsWith(\"/\")) page__ = Folder();\n        else\n            page__ = mime_t.startsWith('text') ? fs.readFileSync(location).toString() : fs.readFileSync(location);\n        function Folder() {\n            let folder = fs.readdirSync(location);\n            res.setHeader(\"Content-Type\", \"text/html\");\n            if (folder.includes(\"index.html\"))\n                return fs.readFileSync(location + \"index.html\").toString();\n            else if (folder.includes(\"index.hbs\"))\n                return HBSComp(fs.readFileSync(location + \"index.hbs\").toString())({});\n            else {\n                let string = ``;\n                for (const file of folder) {\n                    try {\n                        const folder2 = fs.readdirSync(node_path_1.default.join(location, file));\n                        void folder2;\n                        string += `<a data-link-static href=\"/?page=${_page}/${file}/\"><div>/${file}/</div></a><hr/>`;\n                    }\n                    catch (e) {\n                        string += `<a data-link-static href=\"/?page=${_page}/${file}\"><div>/${file}</div></a><hr/>`;\n                        void e;\n                    }\n                }\n                return `<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Document</title>\n    <link rel=\"stylesheet\" href=\"/?page=/assets/css/base.css\">\n\n    <script src=\"/?page=/assets/setup.js\" type=\"module\" defer></script>\n</head>\n<body>\n    ${string}\n</body>\n</html>`;\n            }\n        }\n        if (String(_page).endsWith(\".hbs\"))\n            await res.end(HBSComp(page__)({}));\n        else\n            await res.end(page__);\n    }\n    catch (e) {\n        await res.setHeader(\"Content-Type\", \"text/plain\");\n        await res.setHeader(\"serverside-force-content-length\", \"true\");\n        await res.setStatus(404);\n        await res.end(`CANNOT GET '${req.url}', RETURNED 404\\n------------------\\n${e}`);\n    }\n}",
+            "method": "GET",
+            "ID": 16
+          }
+        },
+        {
+          "key": "/core/dumpmem",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async (req, res) => {\n        await res.setHeader(\"Content-Type\", \"application/json\");\n        await res.setHeader(\"serverside-force-content-length\", \"true\");\n        await res.setStatus(200);\n        await res.end((0, memlog_1.dumpAll)());\n    }",
+            "method": "POST",
+            "ID": 17
+          }
+        },
+        {
+          "key": "*",
+          "value": {
+            "expectedStatus": false,
+            "handler": "async (req, res) => {\n    await res.setHeader('Content-Type', 'application/json');\n    await res.setHeader('serverside-force-content-length', 'true');\n    await res.setStatus(HTTP_Server_1.EHTTPStatus.NOT_FOUND);\n    await res.end(JSON.stringify({\n        code: (0, HTTP_Server_1.status2CodeNStr)(HTTP_Server_1.EHTTPStatus.NOT_FOUND),\n        error: 'could not find the resource you were looking for :('\n    }));\n}",
+            "method": "ALL",
+            "ID": 18
+          }
+        }
+      ]
+    }
+  ]
+}

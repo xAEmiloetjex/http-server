@@ -1,6 +1,5 @@
 // import './testApp/index'
 // import './tests/V1_full/index'
-
 import { Server } from "node:net";
 import path from "node:path";
 import * as fs from "node:fs";
@@ -16,11 +15,16 @@ import fmt from "./lib/fmt";
 import { Logger } from "./lib/shared/logger";
 
 import "./layouts.hbs"
-import { EHTTPStatus, status2CodeNStr } from "./lib/HTTP_Server";
+import { EHTTPStatus, RateLimiter, status2CodeNStr } from "./lib/HTTP_Server";
 
 import API from "./routes/api";
 import Sockets from "./routes/sockets";
 import API2 from "./routes/api2";
+import { DUMP_CONF, dumpAll, DUMPIDX } from "./lib/memlog";
+import Test from "./routes/test";
+import { EventEmitter } from "./lib/std/ddrm/Events";
+
+export const glob_ev = new EventEmitter();
 
 export const db = new QDB.QuickDB({
   driver: new QDB.MemoryDriver()
@@ -77,16 +81,34 @@ const app = Router.createServer({
 
 const main = app.router("/");
 const core = app.router("/core")
+const legacy = app.router("/legacy");
+app.use('/tests', Test)
 app.use('/api', API)
-app.use('/core', core)
-app.use('/sockets', Sockets)
 app.use('/api2', new API2().router)
+app.use('/sockets', Sockets)
+// app.use('/core', core)
+// app.use('/legacy', legacy)
+const RateLimit = new RateLimiter(1, 1000)
 
 app.use(async (req, res, next) => {
   await res.setHeader('x-powered-by', 'JoeMama')
   await res.setHeader('custom-logger', 'true')
   appLogger.http(`(${req.method}) ${req.url} |`, {...(req.queries)}, {...(req.params)})
-  next()
+  
+  // const clientIP = req.socket.remoteAddress;
+  // if (!RateLimit.isAllowed(clientIP)) {
+  //   await res.setHeader('Content-Type', 'application/json');
+  //   await res.setStatus(EHTTPStatus.TOO_MANY_REQUESTS)
+  //   await res.end(JSON.stringify({
+  //     code: status2CodeNStr(EHTTPStatus.TOO_MANY_REQUESTS),
+  //     error: 'You\'re timed-out because you are sending too many requests :!'
+  //   }))
+  //   return 1;
+  // }
+
+  await next()
+  // req['socket'] = {};
+  // appLogger.error(req)
 })
 
 // core.use(async (req, res, next) => {
@@ -101,67 +123,6 @@ core.all('/', async (req, res) => {
   await res.end('core')
 })
 
-core.all('/_/:a/:b/:c/:d', async (req, res) => {
-  await res.setHeader('Content-Type', 'application/json');
-  await res.setHeader('serverside-force-content-length', 'true')
-  await res.end(String(JSON.stringify({
-    ...(req.params)
-  })));
-})
-
-// console.log('Registered middlewares:', app.middlewares);  // Add this
-// console.log('Core router:', core);  // And this
-
-
-
-// api.all('/', async (req, res) => {
-//   await res.setHeader('Content-Type', 'application/json');
-//   await res.setHeader('serverside-force-content-length', 'true')
-//   await res.end(JSON.stringify({
-//     code: status2CodeNStr(EHTTPStatus.OK),
-//     error: ''
-//   }))
-// })
-
-// // => /test/<*>/<*>
-// main.post('/test/:name/:name2', async (req,res) => {
-//   req.params.name;
-//   req.params.name2
-// })
-
-main.post('/test/macro', async (req, res) => {
-  await res.setHeader('Content-Type', 'application/json');
-  await res.setHeader('serverside-force-content-length', 'true')
-  await res.end(String(JSON.stringify({
-    ...(JSON.parse(req.body))
-  })));
-})
-
-main.get("/test/macro", async (req, res) => {
-  await res.setHeader('Content-Type', 'application/json');
-  await res.setHeader('serverside-force-content-length', 'true')
-  await res.end(String(JSON.stringify({
-    ...(req.queries)
-  })));
-})
-
-main.all('/test/:name', async (req, res) => {
-  await res.setHeader('Content-Type', 'application/json');
-  await res.setHeader('serverside-force-content-length', 'true')
-  await res.end(String(JSON.stringify({
-    name: req.params.name
-  })));
-})
-
-// and this should register the route to /test
-main.post('/test', async (req, res) => {
-  await res.setHeader('Content-Type', 'application/json');
-  await res.setHeader('serverside-force-content-length', 'true')
-  await res.end(String(JSON.stringify({
-    ...(JSON.parse(req.body))
-  })));
-})
-
 let addrCount = new Map()
 
 setInterval(() => {
@@ -170,49 +131,67 @@ setInterval(() => {
   })
 },5000)
 
-main.all('/', async (req,res) => {
-  const doFunnyNumber: boolean = true
+legacy.all('/', async (req,res) => {
+  const doFunnyNumber: boolean = true;
 
-  await res.setHeader('Content-Type', 'text/plain')
-  await res.setHeader('serverside-force-content-length', 'true')
+  await res.setHeader('serverside-force-content-length', 'true');
 
-  // console.log(req.socket.address())
+  // console.log('[main.all("/")]', req.socket.address());
 
-  const sockAddr = req.socket.address()
+  const sockAddr = req.socket.address();
 
   // @ts-expect-error
   if (!sockAddr.family || !sockAddr.address || !sockAddr.port) {
-    await res.setStatus(EHTTPStatus.INTERNAL_SERVER_ERROR)
+    await res.setHeader('Content-Type', 'application/json');
+    await res.setStatus(EHTTPStatus.INTERNAL_SERVER_ERROR);
     await res.end(JSON.stringify({
       code: status2CodeNStr(EHTTPStatus.INTERNAL_SERVER_ERROR),
       error: 'Something went wrong :!'
-    }))
-    return
+    }));
+    return;
   }
 
   // @ts-expect-error
-  const addr_comb = `${sockAddr.family}://${sockAddr.address}:${sockAddr.port}`
+  const addr_comb = `${sockAddr.family}://${sockAddr.address}:${sockAddr.port}`;
 
-  if (!addrCount.has(addr_comb)) addrCount.set(addr_comb, 0)
+  if (!addrCount.has(addr_comb)) addrCount.set(addr_comb, 0);
   if (addrCount.get(addr_comb) > 10) {
-    let responseCode = EHTTPStatus.TOO_MANY_REQUESTS 
-    if(doFunnyNumber === true) responseCode = EHTTPStatus.KEEP_YOUR_CALM
-    else responseCode = EHTTPStatus.TOO_MANY_REQUESTS
+    let responseCode = EHTTPStatus.TOO_MANY_REQUESTS;
+    if(doFunnyNumber === true) responseCode = EHTTPStatus.KEEP_YOUR_CALM;
+    else responseCode = EHTTPStatus.TOO_MANY_REQUESTS;
 
-    await res.setStatus(responseCode)
+    await res.setHeader('Content-Type', 'application/json');
+    await res.setStatus(responseCode);
     return await res.end(JSON.stringify({
       code: status2CodeNStr(responseCode),
       error: 'You\'re timed-out because you are sending too many requests :!'
-    }))
+    }));
   } else {
-    await res.setStatus(EHTTPStatus.OK)
-    await res.end(`Joe mama - oe na na`)
-    addrCount.set(addr_comb, addrCount.get(addr_comb) + 1)
+    await res.setHeader('Content-Type', 'text/plain');
+    await res.setStatus(EHTTPStatus.OK);
+    await res.end(`Joe mama - oe na na`);
+    addrCount.set(addr_comb, addrCount.get(addr_comb) + 1);
   }
 
 })
 
-main.get("/static", async (req, res) => {
+main.get('/', StaticHandler);
+main.get('/static', StaticHandler);
+
+const staticRateLimit = new RateLimiter(100, 10000)
+
+async function StaticHandler(req, res) {
+  const clientIP = req.socket.remoteAddress;
+  if (!staticRateLimit.isAllowed(clientIP)) {
+    await res.setHeader('Content-Type', 'application/json');
+    await res.setStatus(EHTTPStatus.TOO_MANY_REQUESTS)
+    await res.end(JSON.stringify({
+      code: status2CodeNStr(EHTTPStatus.TOO_MANY_REQUESTS),
+      error: 'You\'re timed-out because you are sending too many requests :!'
+    }))
+    return 1;
+  }
+
   const page = query(req.queries, "page");
   const _page = page == "undefined" || page == "" ? "/" : page;
   const mime_t_ = mime.lookup(_page);
@@ -228,7 +207,10 @@ main.get("/static", async (req, res) => {
     await res.setHeader("Content-Type", mime_t);
     await res.setHeader("serverside-force-content-length", "true");
     let page__:string|Buffer = "";
-    if (String(_page).endsWith("/")) page__ = Folder();
+
+    if (fs.lstatSync(location).isDirectory()) page__ = Folder();
+
+    // if (String(_page).endsWith("/")) page__ = Folder();
     else page__ = mime_t.startsWith('text') ? fs.readFileSync(location).toString() : fs.readFileSync(location);
     function Folder() {
       
@@ -244,9 +226,9 @@ main.get("/static", async (req, res) => {
           try {
             const folder2 = fs.readdirSync(path.join(location, file));
             void folder2;
-            string += `<a data-link-static href="/static?page=${_page}${file}/"><div>/${file}/</div></a><hr/>`;
+            string += `<a data-link-static href="/?page=${_page}/${file}/"><div>/${file}/</div></a><hr/>`;
           } catch (e) {
-            string += `<a data-link-static href="/static?page=${_page}${file}"><div>/${file}</div></a><hr/>`;
+            string += `<a data-link-static href="/?page=${_page}/${file}"><div>/${file}</div></a><hr/>`;
             void e;
           }
         }
@@ -256,9 +238,9 @@ main.get("/static", async (req, res) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/static?page=/assets/css/base.css">
+    <link rel="stylesheet" href="/?page=/assets/css/base.css">
 
-    <script src="/static?page=/assets/setup.js" type="module" defer></script>
+    <script src="/?page=/assets/setup.js" type="module" defer></script>
 </head>
 <body>
     ${string}
@@ -276,7 +258,20 @@ main.get("/static", async (req, res) => {
       `CANNOT GET '${req.url}', RETURNED 404\n------------------\n${e}`
     );
   }
-});
+}
+
+if (DUMP_CONF.getIdx(DUMPIDX.mode) === "API_TRIGGER")
+{
+  console.log('API Trigger Enabled')
+  core.post('/dumpmem', async (req, res) => {
+    await res.setHeader("Content-Type", "application/json");
+    await res.setHeader("serverside-force-content-length", "true");
+    await res.setStatus(200);
+    await res.end(
+      dumpAll()
+    );
+  })
+}
 
 main.all('*', async (req, res) => {
   await res.setHeader('Content-Type', 'application/json')
@@ -286,12 +281,25 @@ main.all('*', async (req, res) => {
 
   await res.end(JSON.stringify({
     code: status2CodeNStr(EHTTPStatus.NOT_FOUND),
+    location: req.url,
     error: 'could not find the resource you were looking for :('
   }))
 })
 
+glob_ev.addListener('sock/global/test/0', (...data: any[]) => {
+  console.log(data);
+  return {
+    status: 'pass',
+    received_data: data
+  }
+})
+
 app.listen(5000).then(({port, _}: {port:number, _: Server}) => {
-  console.log("server running on: ", port)
+  console.log("server running on: ", port);
+  if (DUMP_CONF.getIdx(DUMPIDX.mode) === "POST_INIT")
+  {
+    dumpAll()
+  }
 })
 
 // app.listenH2(5001).then(({port, _}: {port:number, _: Server}) => {

@@ -22,7 +22,7 @@ db.set(`recursion.iteration`, 0);
 
 export default class Recursion {
     public router: IRouter;
-    public iteration: number;
+    public iteration: number = 0;
 
     constructor(R: IRouter) {
         this.router = R;
@@ -51,7 +51,7 @@ export default class Recursion {
     private initializeRoutes(): void {
         // this.router.use('/test2', API_Test2);
         
-        if (this.iteration <= 10) this.router.use(`/re_${this.iteration}`, Recursion);
+        if (this.iteration <= 1) this.router.use(`/re_${this.iteration}`, Recursion);
         this.router.get('/example', this.exampleRoute);
     }
 

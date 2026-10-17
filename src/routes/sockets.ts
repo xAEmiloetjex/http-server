@@ -1,16 +1,18 @@
+import * as path from "node:path"
+
 import { RateLimiter } from "../lib/HTTP_1.1/V4";
 import Router, { IReq, IRes, IRouter, RouterClass } from "../lib/Router_v3";
 import fmt from "../lib/fmt";
 import { Logger } from "../lib/shared/logger";
 import { EHTTPStatus, status2CodeNStr } from "../lib/HTTP_Server";
-import { EventEmitter } from "../lib/shared/Events";
+import { EventEmitter } from "../lib/std/ddrm/Events";
 
 const logger = new Logger('SocketHandler');
 
 const APIRateLimiter = new RateLimiter(128, 60000)
 // const APIRateLimiter = new RateLimiter(1, 60000)
 
-const _EV = new EventEmitter()
+export const _EV = new EventEmitter();
 
 export default class Sockets {
     public router: IRouter;
@@ -18,6 +20,8 @@ export default class Sockets {
 
     constructor(R: IRouter) {
         this.router = R;
+        this.EV = _EV;
+        if (this.EV === undefined) this.EV = new EventEmitter();
 
         this.router.use(async (req: IReq, res: IRes, next: () => Promise<void>) => {
             await this.corsMiddleware(req, res, next);
@@ -99,13 +103,19 @@ export default class Sockets {
         }))
     }
 
+    private async S_register(req: IReq, res: IRes): Promise<void> {
+        await res.setHeader('Content-Type', 'application/json');
+        await res.setHeader('serverside-force-content-length', 'true')
+        res.end('{}')
+    }
+
     private async S_New(req: IReq, res: IRes): Promise<void> {
+        const ev = (await import(path.resolve('./build/index.js'))).glob_ev;
       const obj: {
         eventId: string,
         arguments: any
       } = JSON.parse(req.body)
-      
-      const data = await this.EV.emit(obj.eventId, ...obj.arguments)
+      const data = await ev.emit(obj.eventId, ...obj.arguments).catch(console.log)
       
       await res.setHeader('Content-Type', 'application/json');
       await res.setHeader('serverside-force-content-length', 'true')

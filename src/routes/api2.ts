@@ -56,6 +56,7 @@ export default class API2 {
 
             const clientIP = req.socket.remoteAddress;
             if (!APIRateLimiter.isAllowed(clientIP)) {
+                await res.setHeader('Content-Type', 'application/json');
                 await res.setStatus(responseCode)
                 await res.end(JSON.stringify({
                     code: status2CodeNStr(responseCode),
