@@ -141,7 +141,7 @@ export function joinUnderscore(input: string): string {
     if (CHAR == " " || CHAR == "-") newSplit.push("_")
     else newSplit.push(CHAR)
   }
-  return newSplit.join()
+  return newSplit.join("")
 }
 
 export function splitSpace(input: string) {
