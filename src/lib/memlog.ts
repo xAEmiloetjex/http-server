@@ -26,11 +26,12 @@ if (process.env.DUMP_MEMORY !== undefined) {
     DUMP_CONF.setIdx(DUMPIDX.mode, process.env.DUMP_MEMORY);
     DUMP_CONF.setIdx(DUMPIDX.location, process.env.DUMP_LOCATION ?? "./dump.json");
     DUMP_CONF.setIdx(DUMPIDX.padding, process.env.DUMP_JSON_PADDING ?? "2");
-    DUMP_CONF.setIdx(DUMPIDX.Google_Scuffed_Dump, process.env.DUMP_MAPS);
-    if (process.env.DUMP_HEAP === 'true') {
-        DUMP_CONF.setIdx(DUMPIDX.heap_enabled, true);
+
+    if (process.env.DUMP_SCUFFED === 'true') {
+        DUMP_CONF.setIdx(DUMPIDX.Google_Scuffed_Dump, true);
     }
-    else {
+
+    if (process.env.DUMP_HEAP !== 'true') {
         DUMP_CONF.setIdx(DUMPIDX.heap_enabled, false);
     }
 
@@ -48,8 +49,8 @@ export function dumpAll() {
         dump_store,
     }
 
+    const scuffed_discovered_maps: Record<string, any> = {};
     if (DUMP_CONF.getIdx(DUMPIDX.Google_Scuffed_Dump) === true) {
-        const scuffed_discovered_maps: Record<string, any> = {};
         try {
             // We trekken illegaal de complete CommonJS cache van Node.js open
             for (const cachedModule of Object.values((require as any).cache || {})) {
@@ -73,6 +74,8 @@ export function dumpAll() {
             void e;
         }
     }
+
+    json['scuffed_discovered_maps'] = scuffed_discovered_maps
 
     const json_str =
         JSON.stringify(

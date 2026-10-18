@@ -23,6 +23,7 @@ import API2 from "./routes/api2";
 import { DUMP_CONF, dumpAll, DUMPIDX } from "./lib/memlog";
 import Test from "./routes/test";
 import { EventEmitter } from "./lib/std/ddrm/Events";
+import { Init } from "./modular_evt_test";
 
 export const glob_ev = new EventEmitter();
 
@@ -286,13 +287,15 @@ main.all('*', async (req, res) => {
   }))
 })
 
-glob_ev.addListener('sock/global/test/0', (...data: any[]) => {
+glob_ev.addListener('sock/global/test/0', (data: any) => {
   console.log(data);
   return {
     status: 'pass',
     received_data: data
   }
 })
+
+Init();
 
 app.listen(5000).then(({port, _}: {port:number, _: Server}) => {
   console.log("server running on: ", port);

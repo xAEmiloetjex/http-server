@@ -115,7 +115,7 @@ export default class Sockets {
         eventId: string,
         arguments: any
       } = JSON.parse(req.body)
-      const data = await ev.emit(obj.eventId, ...obj.arguments).catch(console.log)
+      const data = await ev.emit(obj.eventId, obj.arguments).catch(console.log)
       
       await res.setHeader('Content-Type', 'application/json');
       await res.setHeader('serverside-force-content-length', 'true')

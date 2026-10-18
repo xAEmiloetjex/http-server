@@ -1,4 +1,4 @@
-import { EventQueue, type TEvHandler, type IRemLOpts, type HandlerItem } from "./core/EventQueue_3";
+import { EventQueue, type TEvHandler, type IRemLOpts, type HandlerItem, TChildrenEmitters } from "./core/EventQueue_3";
 
 /**
  * The EventEmitter Class
@@ -7,6 +7,11 @@ export class EventEmitter extends EventQueue {
   constructor(private prefix: string = "") {
     super();
   }
+
+  // public override addParent(parent: TChildrenEmitters): void {
+  //   super.addParent(parent);
+  //   parent.addChild(this, parent);
+  // }
 
   // public AbstractionClass: this = this;
 

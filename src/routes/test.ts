@@ -102,13 +102,13 @@ export default class Test {
     private async VecTest(req: IReq, res: IRes): Promise<void>
     {
         // console.log(this.VecTestMap)
-
         const TestMap = {
             0: 'enabled',
             1: 'mode',
             2: 'location',
             3: 'padding',
-            4: 'heap_enabled'
+            4: 'heap_enabled',
+            5: 'Google_Scuffed_Dump'
         };
         const v = DUMP_CONF.clone()
             .allowUnsafe()

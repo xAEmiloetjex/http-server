@@ -144,6 +144,8 @@ const DEFAULTS = {
   RESPLEVEL: ResponseLevels.Normal,
 };
 
+const setInterval = (cb: any, timeout: number) => {};
+
 /**
  * @function SyncLoop
  *
@@ -204,8 +206,8 @@ export abstract class EventQueue {
 
   // public setParents(parents: TChildrenEmitters[]) {}
   public addParent(parent: TChildrenEmitters) {
-    if (this.children.includes(parent)) throw new Error('You tried to make a child of this instance a parent of this instance, this is not allowed')
-    this.parents.push(parent)
+    if (this.children.includes(parent)) throw new Error('You tried to make a child of this instance a parent of this instance, this is not allowed');
+    this.parents.push(parent);
   }
 
   public setChildren(children: TChildrenEmitters[], parent: TChildrenEmitters) {
@@ -271,7 +273,7 @@ export abstract class EventQueue {
         // this.executedGlobals.push(obj);
         this.pushStore("execGlobs", obj);
       }
-    }, 0);
+    }, INTERNAL_GLOB_SYNC_OFFSET);
   }
 
   private pushStore(name: string, data: RestrictiveAny | RestrictiveAny[]) {
@@ -482,11 +484,11 @@ export abstract class EventQueue {
         data: _data ? _data : undefined,
       };
       if (name.startsWith("children::") || name.startsWith("_children::")) {
-        if (this.logLevel != LogLevels.Silent)
-          this._logger_.warn(
-            "Children are experimental!\n",
-            "For now we are unable to retrieve the output of the children, so you will have to handle all of that on your own, good luck!"
-          );
+        // if (this.logLevel != LogLevels.Silent)
+          // this._logger_.warn(
+          //   "Children are experimental!\n",
+          //   "For now we are unable to retrieve the output of the children, so you will have to handle all of that on your own, good luck!"
+          // );
 
         let states: Map<string, {meta: {[x:string]:any}, state: EmitState}> = new Map<string, {meta: {[x:string]:any}, state: EmitState}>()
         let flatStates: any[] = []
@@ -496,7 +498,7 @@ export abstract class EventQueue {
 
         for (const child of this.children) {
           // console.log(child)
-          console.log("isPrefixless =", prefixless)
+          // console.log("isPrefixless =", prefixless)
           child.emit(
             prefixless ? id_ : 'parent::' + id_,
             obj.data).then(
@@ -732,4 +734,4 @@ export abstract class EventQueue {
   }
 }
 
-SyncLoop();
+// SyncLoop();
